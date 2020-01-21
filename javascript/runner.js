@@ -17,15 +17,17 @@ class Runner {
         this.moveLegSize = 0
         this.carsMove = 0
         this.moveJump = 0
-        this.moveJumpX = 10
         this.score = 0
 
         document.addEventListener('keydown', (e) => { this.jump(e) })
 
+
         document.addEventListener('keydown', (e) => { this.move(e) })
         document.addEventListener('keydown', (e) => { this.gamePause(e) })
 
+        this.algoritmCars()
 
+        this.dayOrNight()
     }
     move(e) {
         if (e.code == 'Enter') this.moveTOrF = true;
@@ -55,18 +57,22 @@ class Runner {
             }
             this.moveCars()
 
-            this.dayOrNight()
-
             this.gameScore()
         }
     }
     moveCars() {
-
         this.carsMove += 5
         this.cars.style.transform = `translateX(-${this.carsMove}px)`
-        if (this.carsMove >= 2000) {
-            this.carsMove = 0
-        }
+
+    }
+    algoritmCars() {
+        let carsInterval = setTimeout(() => {
+            let random = 900 + Math.random() * (5000 + 1 - 900);
+            if (this.carsMove >= Math.floor(random)) {
+                this.carsMove = 0
+            }
+            this.algoritmCars()
+        }, 1000)
     }
     moveLegs() {
         this.moveLegSize++
@@ -78,13 +84,18 @@ class Runner {
     }
 
     dayOrNight() {
-        setTimeout(() => {
+        let dayOrNightInterval = setTimeout(() => {
+            this.dayOrNight()
             this.road.children[0].style = `z-index:1;`
-        }, 5000);
+        }, 10000);
+        setTimeout(() => {
+            clearTimeout(dayOrNightInterval)
+            this.road.children[0].style = `z-index:0;`
+        }, 15000);
     }
 
     jump(e) {
-        if (e.code == this.btn || e == true) {
+        if (e.code == this.btn && this.moveJump == 0 || e == true) {
             this.moveJump += 5
             this.runner.style.transform = `translateY(-${this.moveJump}px)`
 
@@ -98,7 +109,7 @@ class Runner {
         }
     }
     drop() {
-        this.moveJump--
+        this.moveJump -= 2
         this.runner.style.transform = `translateY(-${this.moveJump}px)`
 
         let jumpSetInterval = setTimeout(() => {
